@@ -17,6 +17,7 @@ public class SimpleAlbum {
 	String[] Img_Array = { "1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg", "6.jpg" };
 
 	public static void main(String[] args) {
+		JFrame.setDefaultLookAndFeelDecorated(true);
 		SimpleAlbum gui = new SimpleAlbum();
 		gui.go();
 	}
