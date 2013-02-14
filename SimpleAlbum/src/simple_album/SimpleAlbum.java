@@ -8,7 +8,8 @@ import java.awt.event.*;
 
 public class SimpleAlbum {
 
-	JFrame frame1;
+	JFrame frame;
+	JPanel panel;
 	Boolean visible;
 	JButton ButtonRight;
 	JButton ButtonLeft;
@@ -23,8 +24,9 @@ public class SimpleAlbum {
 	}
 
 	public void go() {
-		frame1 = new JFrame();
-		frame1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame = new JFrame();
+		panel = new JPanel();
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		visible = false;
 
 		ButtonRight = new JButton(">");
@@ -32,16 +34,20 @@ public class SimpleAlbum {
 
 		ButtonLeft = new JButton("<");
 		ButtonLeft.addActionListener(new LabelButtonListenerLeft());
+		
+		panel.add(ButtonLeft);
+		panel.add(ButtonRight);
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
 		// label = new JLabel("I'm a label");
 		MyDrawPanel drawPanel = new MyDrawPanel();
 
-		frame1.getContentPane().add(BorderLayout.CENTER, drawPanel);
-		frame1.getContentPane().add(BorderLayout.EAST, ButtonRight);
-		frame1.getContentPane().add(BorderLayout.WEST, ButtonLeft);
+		frame.getContentPane().add(BorderLayout.CENTER, drawPanel);
+		frame.getContentPane().add(BorderLayout.EAST, panel);
+		//frame.getContentPane().add(BorderLayout.WEST, ButtonLeft);
 
-		frame1.setSize(700, 700);
-		frame1.setVisible(true);
+		frame.setSize(700, 700);
+		frame.setVisible(true);
 
 	}
 
@@ -52,7 +58,7 @@ public class SimpleAlbum {
 			} else {
 				i = 0;
 			}
-			frame1.repaint();
+			frame.repaint();
 		}
 	} // close inner class
 	
@@ -63,13 +69,13 @@ public class SimpleAlbum {
 			} else {
 				i = 5;
 			}
-			frame1.repaint();
+			frame.repaint();
 		}
 	} // close inner class
 
 	class ColorButtonListener implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
-			frame1.repaint();
+			frame.repaint();
 		}
 	} // close inner class
 	
