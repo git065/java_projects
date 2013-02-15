@@ -10,9 +10,14 @@ public class SimpleAlbum {
 
 	JFrame frame;
 	JPanel panel;
+	JLabel label;
 	Boolean visible;
 	JButton ButtonRight;
 	JButton ButtonLeft;
+	JButton ButtonGo;
+	JTextField field;
+	String img = "1.jpg";
+	
 	int i = 0;
 
 	String[] Img_Array = { "1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg", "6.jpg" };
@@ -24,34 +29,45 @@ public class SimpleAlbum {
 	}
 
 	public void go() {
+		field = new JTextField(20);
+		label = new JLabel("Enter images name:");
+		JPanel test = new JPanel();
+		
 		frame = new JFrame();
 		panel = new JPanel();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		visible = false;
 
 		ButtonRight = new JButton(">");
-		ButtonRight.addActionListener(new LabelButtonListenerRight());
+		ButtonRight.addActionListener(new ButtonListenerRight());
 
 		ButtonLeft = new JButton("<");
-		ButtonLeft.addActionListener(new LabelButtonListenerLeft());
+		ButtonLeft.addActionListener(new ButtonListenerLeft());
+		
+		ButtonGo = new JButton("Go");
+		ButtonGo.addActionListener(new ButtonListenerGo());
 		
 		panel.add(ButtonLeft);
 		panel.add(ButtonRight);
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		
+		test.add(label);
+		test.add(field);
+		test.add(ButtonGo);
+		//panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
 		// label = new JLabel("I'm a label");
 		MyDrawPanel drawPanel = new MyDrawPanel();
 
 		frame.getContentPane().add(BorderLayout.CENTER, drawPanel);
-		frame.getContentPane().add(BorderLayout.EAST, panel);
-		//frame.getContentPane().add(BorderLayout.WEST, ButtonLeft);
+		frame.getContentPane().add(BorderLayout.SOUTH, panel);
+		frame.getContentPane().add(BorderLayout.NORTH, test);
 
 		frame.setSize(700, 700);
 		frame.setVisible(true);
 
 	}
 
-	class LabelButtonListenerRight implements ActionListener {
+	class ButtonListenerRight implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
 			if (i < 5) {
 				i++;
@@ -62,7 +78,7 @@ public class SimpleAlbum {
 		}
 	} // close inner class
 	
-	class LabelButtonListenerLeft implements ActionListener {
+	class ButtonListenerLeft implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
 			if (i > 0) {
 				i--;
@@ -73,8 +89,9 @@ public class SimpleAlbum {
 		}
 	} // close inner class
 
-	class ColorButtonListener implements ActionListener {
+	class ButtonListenerGo implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
+			img = field.getText();
 			frame.repaint();
 		}
 	} // close inner class
@@ -101,10 +118,15 @@ public class SimpleAlbum {
 					700, Color.ORANGE);
 			g2d.setPaint(gradient);
 			g2d.fillRect(0, 0, w, h);
-			String path = "images/" + Img_Array[i];
+			/*String path = "images/" + Img_Array[i];*/
+			String path = "images/" + img;
 			
 			ImageIcon myimg = createIcon(path);
 			
+			if(myimg == null){
+				myimg = createIcon("images/1.jpg");
+				label.setText("File" + img + " not found!");
+			}
 			g2d.drawImage(myimg.getImage(), 150, 150, this);
 		}
 
