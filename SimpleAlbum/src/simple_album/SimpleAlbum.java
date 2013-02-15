@@ -1,4 +1,4 @@
-/*test*/
+
 package simple_album;
 import java.net.URL;
 import javax.swing.*;
