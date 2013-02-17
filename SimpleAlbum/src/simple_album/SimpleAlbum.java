@@ -1,5 +1,6 @@
 /*test*/
 package simple_album;
+
 import java.net.URL;
 import javax.swing.*;
 
@@ -16,8 +17,9 @@ public class SimpleAlbum {
 	JButton ButtonLeft;
 	JButton ButtonGo;
 	JTextField field;
+	String path = "images/1.jpg";
 	String img = "1.jpg";
-	
+
 	int i = 0;
 
 	String[] Img_Array = { "1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg", "6.jpg" };
@@ -32,7 +34,7 @@ public class SimpleAlbum {
 		field = new JTextField(20);
 		label = new JLabel("Enter images name:");
 		JPanel test = new JPanel();
-		
+
 		frame = new JFrame();
 		panel = new JPanel();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -43,17 +45,19 @@ public class SimpleAlbum {
 
 		ButtonLeft = new JButton("<");
 		ButtonLeft.addActionListener(new ButtonListenerLeft());
-		
+
 		ButtonGo = new JButton("Go");
 		ButtonGo.addActionListener(new ButtonListenerGo());
-		
+
 		panel.add(ButtonLeft);
 		panel.add(ButtonRight);
 		
+		field.setText("6.jpg");
+
 		test.add(label);
 		test.add(field);
 		test.add(ButtonGo);
-		//panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		// panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
 		// label = new JLabel("I'm a label");
 		MyDrawPanel drawPanel = new MyDrawPanel();
@@ -74,10 +78,11 @@ public class SimpleAlbum {
 			} else {
 				i = 0;
 			}
+			path = "images/" + Img_Array[i];
 			frame.repaint();
 		}
 	} // close inner class
-	
+
 	class ButtonListenerLeft implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
 			if (i > 0) {
@@ -85,6 +90,7 @@ public class SimpleAlbum {
 			} else {
 				i = 5;
 			}
+			path = "images/" + Img_Array[i];
 			frame.repaint();
 		}
 	} // close inner class
@@ -92,12 +98,13 @@ public class SimpleAlbum {
 	class ButtonListenerGo implements ActionListener {
 		public void actionPerformed(ActionEvent event) {
 			img = field.getText();
+			path = "images/" + img;
 			frame.repaint();
 		}
 	} // close inner class
-	
+
 	protected static ImageIcon createIcon(String path) {
-		URL imgURL = SimpleAlbum.class.getResource(path);		
+		URL imgURL = SimpleAlbum.class.getResource(path);
 		if (imgURL != null) {
 			return new ImageIcon(imgURL);
 		} else {
@@ -118,12 +125,13 @@ public class SimpleAlbum {
 					700, Color.ORANGE);
 			g2d.setPaint(gradient);
 			g2d.fillRect(0, 0, w, h);
-			/*String path = "images/" + Img_Array[i];*/
-			String path = "images/" + img;
+
 			
+			
+
 			ImageIcon myimg = createIcon(path);
-			
-			if(myimg == null){
+
+			if (myimg == null) {
 				myimg = createIcon("images/1.jpg");
 				label.setText("File" + img + " not found!");
 			}
