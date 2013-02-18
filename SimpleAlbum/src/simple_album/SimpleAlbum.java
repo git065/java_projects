@@ -3,6 +3,8 @@ package simple_album;
 
 import java.net.URL;
 import javax.swing.*;
+import javax.swing.text.Caret;
+import javax.swing.text.html.ListView;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -17,6 +19,7 @@ public class SimpleAlbum {
 	JButton ButtonGo;
 	JTextField field;
 	JTextArea log;
+	JList list;
 	String path = "images/1.jpg";
 	String img = "1.jpg";
 	Font font;
@@ -38,16 +41,31 @@ public class SimpleAlbum {
 		JPanel user_panel = new JPanel();
 		JPanel logs_panel = new JPanel();
 		
-		log = new JTextArea(24, 20);
+		log = new JTextArea(20, 20);
+		list = new JList(Img_Array);
+		
+		log.setCaretColor(Color.GREEN);
+		log.setSelectionColor(Color.GRAY);
+		log.setSelectedTextColor(Color.WHITE);
 		log.setLineWrap(true);
 		JScrollPane scroller = new JScrollPane(log);
+		JScrollPane scroller_list = new JScrollPane(list);
 		
 		scroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		
+		scroller_list.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scroller_list.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+				
 		logs_panel.add(scroller);
+		logs_panel.add(scroller_list);
+		logs_panel.setLayout(new BoxLayout(logs_panel, BoxLayout.Y_AXIS));
+		
 		log.setFont(font);
 		log.setForeground(Color.BLACK);
+		
+		//list.setVisibleRowCount(4);
+		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
 		frame = new JFrame();
 		JPanel panel = new JPanel();
