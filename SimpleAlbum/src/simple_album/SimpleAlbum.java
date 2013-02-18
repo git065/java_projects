@@ -101,7 +101,7 @@ public class SimpleAlbum {
 		frame.getContentPane().add(BorderLayout.NORTH, user_panel);
 		frame.getContentPane().add(BorderLayout.EAST, logs_panel);
 
-		frame.setSize(700, 500);
+		frame.setSize(600, 500);
 		frame.setVisible(true);
 
 	}
@@ -173,7 +173,7 @@ public class SimpleAlbum {
 				img = "1.jpg";
 				myimg = createIcon("images/" + img);				
 			}
-			g2d.drawImage(myimg.getImage(), 15, 15, this);
+			g2d.drawImage(myimg.getImage(), 0, 0, this.getSize().width, this.getSize().height, null);
 			log.append(img + " открыт! \n");
 			log.append("--------------------\n");
 			//log.setForeground(Color.BLACK);
