@@ -1,0 +1,5 @@
+
+cd E:\ch1\CH_GOODIES_ANIMATE
+e:
+call ant  
+pause
