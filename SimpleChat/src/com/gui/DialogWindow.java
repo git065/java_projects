@@ -1,5 +1,10 @@
 package com.gui;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import javax.swing.*;
 import javax.swing.text.Caret;
@@ -72,9 +77,8 @@ public class DialogWindow {
 		ButtonSend.addActionListener(new ButtonListenerGo());
 		ImageIcon icon = createIcon("images/send.png");
 		ButtonSend.setIcon(icon);
+		ButtonSend.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		chat_panel.add(ButtonSend);
-
-		MyDrawPanel drawPanel = new MyDrawPanel();
 
 		frame.getContentPane().add(BorderLayout.CENTER, dialog_panel);
 		frame.getContentPane().add(BorderLayout.SOUTH, chat_panel);
@@ -87,12 +91,26 @@ public class DialogWindow {
 	}
 
 	class ButtonListenerGo implements ActionListener {
+		private ObjectOutputStream os;
+
 		public void actionPerformed(ActionEvent event) {
 			if (!TextInputField.getText().isEmpty()) {
 				TextChatHistory.append(TextInputField.getText() + "\n");
+				try {
+					FileOutputStream fileStream = new FileOutputStream(
+							"History.sav");
+					os = new ObjectOutputStream(fileStream);
+					os.writeObject(TextInputField.getText());
+				} catch (FileNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			TextInputField.setText("");
-			//TextChatHistory.append("Кнопка 'Отправить' нажата!\n");
+			// TextChatHistory.append("Кнопка 'Отправить' нажата!\n");
 			// System.out.println("Кнопка 'Отправить' нажата!");
 		}
 	}
@@ -106,13 +124,4 @@ public class DialogWindow {
 			return null;
 		}
 	}
-
-	class MyDrawPanel extends JPanel {
-
-		public void paintComponent(Graphics g) {
-
-		}
-
-	}
-
 }
