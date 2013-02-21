@@ -1,15 +1,8 @@
 package com.gui;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URL;
 import javax.swing.*;
-import javax.swing.text.Caret;
-import javax.swing.text.html.ListView;
-
 import java.awt.*;
 import java.awt.event.*;
 
@@ -19,9 +12,23 @@ public class DialogWindow {
 	private JButton ButtonSend;
 	private JTextArea TextInputField;
 	private JTextArea TextChatHistory;
+	private String text = "";
+	private ObjectInputStream os2;
+	private FileInputStream fileStream2;
 
 	public DialogWindow() {
-		// TODO Auto-generated constructor stub
+		try {
+			fileStream2 = new FileInputStream("History.sav");
+			os2 = new ObjectInputStream(fileStream2);
+			text = (String) os2.readObject();
+			
+		} catch (IOException e) {
+			//e.printStackTrace();
+			text = "";
+		} catch (ClassNotFoundException e) {
+			//e.printStackTrace();
+			text = "";
+		}
 	}
 
 	/**
@@ -29,8 +36,8 @@ public class DialogWindow {
 	 */
 	public static void main(String[] args) {
 		JFrame.setDefaultLookAndFeelDecorated(true);
-		DialogWindow diaTextInputField = new DialogWindow();
-		diaTextInputField.go();
+		DialogWindow dialog = new DialogWindow();
+		dialog.go();
 
 	}
 
@@ -44,13 +51,15 @@ public class DialogWindow {
 		JPanel chat_panel = new JPanel();
 		JPanel info_panel = new JPanel();
 
-		info_panel.add(LaberUsrName);
+		info_panel.add(LaberUsrName);		
 
 		TextChatHistory = new JTextArea(20, 55);
 		TextChatHistory.setCaretColor(Color.GREEN);
 		TextChatHistory.setSelectionColor(Color.GRAY);
 		TextChatHistory.setSelectedTextColor(Color.WHITE);
 		TextChatHistory.setLineWrap(true);
+		TextChatHistory.setEditable(false);
+		TextChatHistory.setText(text);
 
 		JScrollPane scroller_history = new JScrollPane(TextChatHistory);
 		scroller_history
@@ -100,7 +109,7 @@ public class DialogWindow {
 					FileOutputStream fileStream = new FileOutputStream(
 							"History.sav");
 					os = new ObjectOutputStream(fileStream);
-					os.writeObject(TextInputField.getText());
+					os.writeObject(TextChatHistory.getText());
 				} catch (FileNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
