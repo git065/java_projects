@@ -12,20 +12,35 @@ public class DialogWindow {
 	private JButton ButtonSend;
 	private JTextArea TextInputField;
 	private JTextArea TextChatHistory;
+	
 	private String text = "";
+	StringBuffer lines = new StringBuffer();
+	private File file;
+	
+	private BufferedWriter writer;
+	private BufferedReader reader;
+	
 	private ObjectInputStream os2;
 	private FileInputStream fileStream2;
 
 	public DialogWindow() {
+		
 		try {
-			fileStream2 = new FileInputStream("History.sav");
-			os2 = new ObjectInputStream(fileStream2);
-			text = (String) os2.readObject();
+			file = new File("History.sav");
+			if(!file.exists()) {
+				file.createNewFile();
+			}
+			writer = new BufferedWriter(new FileWriter(file, true));
+			reader = new BufferedReader(new FileReader(file));
+			
+			while ( (text = reader.readLine()) != null) {
+				lines.append(text);
+				lines.append("\n");
+			}
+			
+			text = lines.toString();
 			
 		} catch (IOException e) {
-			//e.printStackTrace();
-			text = "";
-		} catch (ClassNotFoundException e) {
 			//e.printStackTrace();
 			text = "";
 		}
@@ -49,9 +64,7 @@ public class DialogWindow {
 
 		JPanel dialog_panel = new JPanel();
 		JPanel chat_panel = new JPanel();
-		JPanel info_panel = new JPanel();
-
-		info_panel.add(LaberUsrName);		
+		JPanel info_panel = new JPanel();				
 
 		TextChatHistory = new JTextArea(20, 55);
 		TextChatHistory.setCaretColor(Color.GREEN);
@@ -66,8 +79,7 @@ public class DialogWindow {
 				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scroller_history
 				.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		dialog_panel.add(scroller_history);
-
+		
 		TextInputField = new JTextArea(4, 45);
 		TextInputField.setCaretColor(Color.GREEN);
 		TextInputField.setSelectionColor(Color.GRAY);
@@ -79,14 +91,17 @@ public class DialogWindow {
 		scroller_input_field
 				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		scroller_input_field
-				.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		chat_panel.add(scroller_input_field);
+				.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);		
 
 		ButtonSend = new JButton();
 		ButtonSend.addActionListener(new ButtonListenerGo());
 		ImageIcon icon = createIcon("images/send.png");
 		ButtonSend.setIcon(icon);
 		ButtonSend.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+
+		info_panel.add(LaberUsrName);
+		dialog_panel.add(scroller_history);
+		chat_panel.add(scroller_input_field);
 		chat_panel.add(ButtonSend);
 
 		frame.getContentPane().add(BorderLayout.CENTER, dialog_panel);
@@ -95,8 +110,30 @@ public class DialogWindow {
 
 		// chat_panel.setSize(chat_panel.getWidth(),chat_panel.getHeight());
 		// ???????????????
+		WindowListener adapter = new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+            	try {
+					writer.flush();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+            }
+            @Override
+            public void windowClosed(WindowEvent e) {
+            	try {
+					writer.flush();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+            }
+        };
+		
 		frame.setSize(700, 500);
 		frame.setVisible(true);
+		frame.addWindowListener(adapter);
 	}
 
 	class ButtonListenerGo implements ActionListener {
@@ -106,10 +143,14 @@ public class DialogWindow {
 			if (!TextInputField.getText().isEmpty()) {
 				TextChatHistory.append(TextInputField.getText() + "\n");
 				try {
-					FileOutputStream fileStream = new FileOutputStream(
+					text = "\n" + TextInputField.getText();
+					writer.write(text);
+					//writer.flush();
+					
+					/*FileOutputStream fileStream = new FileOutputStream(
 							"History.sav");
 					os = new ObjectOutputStream(fileStream);
-					os.writeObject(TextChatHistory.getText());
+					os.writeObject(TextChatHistory.getText());*/
 				} catch (FileNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -119,8 +160,8 @@ public class DialogWindow {
 				}
 			}
 			TextInputField.setText("");
-			// TextChatHistory.append(" ÌÓÔÍ‡ 'ŒÚÔ‡‚ËÚ¸' Ì‡Ê‡Ú‡!\n");
-			// System.out.println(" ÌÓÔÍ‡ 'ŒÚÔ‡‚ËÚ¸' Ì‡Ê‡Ú‡!");
+			// TextChatHistory.append("–ö–Ω–æ–ø–∫–∞ '–û—Ç–ø—Ä–∞–≤–∏—Ç—å' –Ω–∞–∂–∞—Ç–∞!\n");
+			// System.out.println("–ö–Ω–æ–ø–∫–∞ '–û—Ç–ø—Ä–∞–≤–∏—Ç—å' –Ω–∞–∂–∞—Ç–∞!");
 		}
 	}
 
@@ -129,7 +170,7 @@ public class DialogWindow {
 		if (imgURL != null) {
 			return new ImageIcon(imgURL);
 		} else {
-			System.err.println("‘‡ÈÎ ÌÂ Ì‡È‰ÂÌ " + path);
+			System.err.println("–§–∞–π–ª –Ω–µ –Ω–∞–π–¥–µ–Ω " + path);
 			return null;
 		}
 	}
