@@ -3,8 +3,10 @@ package com.gui;
 import java.io.*;
 import java.net.URL;
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
+import com.history.*;
 
 public class DialogWindow {
 
@@ -13,37 +15,13 @@ public class DialogWindow {
 	private JTextArea TextInputField;
 	private JTextArea TextChatHistory;
 	
-	private String text = "";
-	StringBuffer lines = new StringBuffer();
-	private File file;
+	private History history;
 	
-	private BufferedWriter writer;
-	private BufferedReader reader;
-	
-	private ObjectInputStream os2;
-	private FileInputStream fileStream2;
-
 	public DialogWindow() {
 		
-		try {
-			file = new File("History.sav");
-			if(!file.exists()) {
-				file.createNewFile();
-			}
-			writer = new BufferedWriter(new FileWriter(file, true));
-			reader = new BufferedReader(new FileReader(file));
-			
-			while ( (text = reader.readLine()) != null) {
-				lines.append(text);
-				lines.append("\n");
-			}
-			
-			text = lines.toString();
-			
-		} catch (IOException e) {
-			//e.printStackTrace();
-			text = "";
-		}
+	}	
+	public DialogWindow(History history) {
+		this.history = history;
 	}
 
 	/**
@@ -51,13 +29,27 @@ public class DialogWindow {
 	 */
 	public static void main(String[] args) {
 		JFrame.setDefaultLookAndFeelDecorated(true);
-		DialogWindow dialog = new DialogWindow();
+		History history = new History("History.sav");
+		DialogWindow dialog = new DialogWindow(history);		
 		dialog.go();
 
 	}
 
+	public History getHistory() {
+		return history;
+	}
+
+	public void setHistory(History history) {
+		this.history = history;
+	}
+
 	public void go() {
-		Font font = new Font("Verdana", Font.PLAIN, 11);
+		JMenuBar menuBar = new JMenuBar();
+		JMenu fileMenu = new JMenu("File");
+		JMenuItem openMenuItem = new JMenuItem("Open");
+		openMenuItem.addActionListener(new OpenMenuItemListener());
+		
+		Font font = new Font("Arial", Font.PLAIN, 12);
 		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		JLabel LaberUsrName = new JLabel("Naladar");
@@ -72,7 +64,8 @@ public class DialogWindow {
 		TextChatHistory.setSelectedTextColor(Color.WHITE);
 		TextChatHistory.setLineWrap(true);
 		TextChatHistory.setEditable(false);
-		TextChatHistory.setText(text);
+		TextChatHistory.setText(history.getText());
+		TextChatHistory.setFont(font);
 
 		JScrollPane scroller_history = new JScrollPane(TextChatHistory);
 		scroller_history
@@ -103,6 +96,8 @@ public class DialogWindow {
 		dialog_panel.add(scroller_history);
 		chat_panel.add(scroller_input_field);
 		chat_panel.add(ButtonSend);
+		fileMenu.add(openMenuItem);
+		menuBar.add(fileMenu);
 
 		frame.getContentPane().add(BorderLayout.CENTER, dialog_panel);
 		frame.getContentPane().add(BorderLayout.SOUTH, chat_panel);
@@ -114,7 +109,7 @@ public class DialogWindow {
             @Override
             public void windowClosing(WindowEvent e) {
             	try {
-					writer.flush();
+            		history.BufferWriteFlush();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -123,7 +118,7 @@ public class DialogWindow {
             @Override
             public void windowClosed(WindowEvent e) {
             	try {
-					writer.flush();
+            		history.BufferWriteFlush();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -131,37 +126,35 @@ public class DialogWindow {
             }
         };
 		
+        frame.setJMenuBar(menuBar);
 		frame.setSize(700, 500);
 		frame.setVisible(true);
 		frame.addWindowListener(adapter);
 	}
 
 	class ButtonListenerGo implements ActionListener {
-		private ObjectOutputStream os;
-
 		public void actionPerformed(ActionEvent event) {
 			if (!TextInputField.getText().isEmpty()) {
 				TextChatHistory.append(TextInputField.getText() + "\n");
-				try {
-					text = "\n" + TextInputField.getText();
-					writer.write(text);
-					//writer.flush();
-					
-					/*FileOutputStream fileStream = new FileOutputStream(
-							"History.sav");
-					os = new ObjectOutputStream(fileStream);
-					os.writeObject(TextChatHistory.getText());*/
-				} catch (FileNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				history.setText(TextInputField.getText() +"\n");
+				history.addTextinBufferWrite();
+				//writer.flush();
 			}
 			TextInputField.setText("");
-			// TextChatHistory.append("Кнопка 'Отправить' нажата!\n");
-			// System.out.println("Кнопка 'Отправить' нажата!");
+		}
+	}
+	
+	class OpenMenuItemListener implements ActionListener {
+		public void actionPerformed(ActionEvent event) {
+			JFileChooser fileopen = new JFileChooser();
+			int ret = fileopen.showDialog(null, "Открыть файл");               
+			
+			if (ret == JFileChooser.APPROVE_OPTION) {
+				history.setFile(fileopen.getSelectedFile());
+				history.readFileHistory();
+				TextChatHistory.setText(history.getText());
+			}
+
 		}
 	}
 
