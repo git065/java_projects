@@ -1,4 +1,4 @@
-package com.gui;
+package com.client.gui;
 
 import java.io.*;
 import java.net.URL;
@@ -6,7 +6,8 @@ import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.*;
-import com.history.*;
+
+import com.client.utils.*;
 
 public class DialogWindow {
 
@@ -110,6 +111,7 @@ public class DialogWindow {
             public void windowClosing(WindowEvent e) {
             	try {
             		history.BufferWriteFlush();
+            		history.CloseIOStreams();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -119,6 +121,7 @@ public class DialogWindow {
             public void windowClosed(WindowEvent e) {
             	try {
             		history.BufferWriteFlush();
+            		history.CloseIOStreams();
 				} catch (IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();

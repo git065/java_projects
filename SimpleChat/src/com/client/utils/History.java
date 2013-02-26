@@ -1,4 +1,4 @@
-package com.history;
+package com.client.utils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -47,6 +47,10 @@ public class History {
 	
 	public void BufferWriteFlush() throws IOException {
 		this.writer.flush();
+	}
+	public void CloseIOStreams() throws IOException {
+		this.reader.close();
+		this.writer.close();
 	}
 	
 	public void addTextinBufferWrite() {
