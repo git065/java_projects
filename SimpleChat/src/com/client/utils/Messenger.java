@@ -42,6 +42,7 @@ public class Messenger {
 	public void sendMessage(String message) {
 		try {
 			this.writer.write(message);
+			this.writer.flush();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
