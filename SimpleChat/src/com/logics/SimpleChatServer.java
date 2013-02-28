@@ -2,45 +2,92 @@ package com.logics;
 
 import java.io.*;
 import java.net.*;
+import java.util.*;
 
 public class SimpleChatServer {
 
-	ServerSocket serverSocket;
+	private static SimpleChatServer instance;
+	private ArrayList clientOutputStreams;
 
-	public SimpleChatServer(int port) {
-		// TODO Auto-generated constructor stub
-		try {
-			this.serverSocket = new ServerSocket(port);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	private SimpleChatServer() {
 	}
 
-	/**
-	 * @param args
-	 */
-	public void run() {
-		System.out.println("Сервер запущен \n");
-		String status = "Соединение установлено!";
-		try {
-			while (true) {
-				Socket listener = this.serverSocket.accept();
-				PrintWriter writer = new PrintWriter(listener.getOutputStream());
-				writer.println(status);
-				System.out.println(status + "\nIp: " + listener.getInetAddress().getHostAddress());
+	public static SimpleChatServer getInstance() {
+		if (instance == null) {
+			instance = new SimpleChatServer();
+		} else {
+			System.out.println("Сервер уже существует!");
+		}
+		return instance;
+	}
+
+	public class ClientHandler implements Runnable {
+		BufferedReader reader;
+		Socket sock;
+
+		public ClientHandler(Socket clientSOcket) {
+			try {
+				sock = clientSOcket;
+				InputStreamReader isReader = new InputStreamReader(
+						sock.getInputStream());
+				reader = new BufferedReader(isReader);
+
+			} catch (Exception ex) {
+				ex.printStackTrace();
 			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			System.out.println("Невозможно создать соединение");
-			//e.printStackTrace();
+		}
+
+		public void run() {
+			String message;
+			try {
+				while ((message = reader.readLine()) != null) {
+					System.out.println("read " + message);
+					tellEveryone(message);
+				}
+			} catch (IOException e) {
+				System.out.println("Недоступен источник для потока чтения!");
+			} catch (Exception ex) {
+				// ex.printStackTrace();
+			}
+
 		}
 	}
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		SimpleChatServer server = new SimpleChatServer(5000);
-		server.run();
+		SimpleChatServer.getInstance().go();
 	}
 
+	public void go() {		
+		clientOutputStreams = new ArrayList();
+		try {
+			ServerSocket serverSock = new ServerSocket(5000);
+			System.out.println("Сервер запущен!");
+			while (true) {
+				Socket clientSocket = serverSock.accept();
+				PrintWriter writer = new PrintWriter(
+						clientSocket.getOutputStream());
+				clientOutputStreams.add(writer);
+
+				Thread t = new Thread(new ClientHandler(clientSocket));
+				t.start();
+				System.out.println("Получено соединение!");
+			}
+		} catch (Exception ex) {
+			System.out.println("Сервер уже запущен!");
+			//ex.printStackTrace();
+		}
+	}
+
+	public void tellEveryone(String message) {
+		Iterator it = clientOutputStreams.iterator();
+		while (it.hasNext()) {
+			try {
+				PrintWriter writer = (PrintWriter) it.next();
+				writer.println(message);
+				writer.flush();
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
 }
